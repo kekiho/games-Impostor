@@ -251,6 +251,11 @@
                 </ol>
             </div>
 
+            <div class="info-box">
+                <strong>🎲 Base de datos:</strong> 150+ palabras disponibles<br>
+                <strong>📊 Palabras usadas:</strong> <span id="wordStats">0 de 150+</span>
+            </div>
+
             <div class="warning-box">
                 <strong>⚠️ Importante:</strong> Este juego se juega en una sola pantalla. Todos los jugadores deben estar físicamente juntos.
             </div>
@@ -317,6 +322,10 @@
             </div>
 
             <div class="hint">
+                <strong>📊 Palabras usadas en esta sesión:</strong> <span id="playWordStats" style="color: #667eea; font-size: 1.2em;">0 de 136</span>
+            </div>
+
+            <div class="hint">
                 <strong>El impostor es:</strong> <span style="color: #ef4444; font-size: 1.2em;">[SECRETO]</span><br>
                 <small>No reveles esta información hasta el final del juego</small>
             </div>
@@ -353,39 +362,173 @@
     </div>
 
     <script>
-        // Base de datos de palabras
-        const words = [
-            { word: "PIZZA", synonym: "COMIDA ITALIANA" },
-            { word: "BATMAN", synonym: "SUPERHÉROE" },
-            { word: "MESSI", synonym: "FUTBOLISTA" },
-            { word: "TITANIC", synonym: "PELÍCULA FAMOSA" },
-            { word: "NETFLIX", synonym: "SERVICIO DE STREAMING" },
-            { word: "COCA-COLA", synonym: "REFRESCO" },
-            { word: "iPHONE", synonym: "TELÉFONO INTELIGENTE" },
-            { word: "PARIS", synonym: "CIUDAD EUROPEA" },
-            { word: "HARRY POTTER", synonym: "MAGO FAMOSO" },
-            { word: "SPOTIFY", synonym: "APP DE MÚSICA" },
-            { word: "INSTAGRAM", synonym: "RED SOCIAL" },
-            { word: "STARBUCKS", synonym: "CAFETERÍA" },
-            { word: "NIKE", synonym: "MARCA DEPORTIVA" },
-            { word: "YOUTUBE", synonym: "PLATAFORMA DE VIDEOS" },
-            { word: "AMAZON", synonym: "TIENDA EN LÍNEA" },
-            { word: "PIKACHU", synonym: "POKÉMON" },
-            { word: "CRISTIANO RONALDO", synonym: "JUGADOR DE FÚTBOL" },
-            { word: "SHAKIRA", synonym: "CANTANTE COLOMBIANA" },
-            { word: "MCDONALD'S", synonym: "COMIDA RÁPIDA" },
-            { word: "TESLA", synonym: "AUTO ELÉCTRICO" },
-            { word: "GOOGLE", synonym: "BUSCADOR WEB" },
-            { word: "FACEBOOK", synonym: "RED SOCIAL AZUL" },
-            { word: "MINECRAFT", synonym: "VIDEOJUEGO DE BLOQUES" },
-            { word: "SPIDERMAN", synonym: "SUPERHÉROE ARÁCNIDO" },
-            { word: "MARIO BROS", synonym: "FONTANERO DE VIDEOJUEGOS" },
-            { word: "STARBUCKS", synonym: "CAFÉ ESTADOUNIDENSE" },
-            { word: "PEPSI", synonym: "BEBIDA COLA" },
-            { word: "ADIDAS", synonym: "MARCA DE ROPA DEPORTIVA" },
-            { word: "DISNEY", synonym: "COMPAÑÍA DE ENTRETENIMIENTO" },
-            { word: "TOKYO", synonym: "CAPITAL ASIÁTICA" }
+        // Base de datos de palabras (150+ palabras)
+        const allWords = [
+            // Comida y Bebidas
+            { word: "PIZZA", synonym: "MASA" },
+            { word: "SUSHI", synonym: "ARROZ" },
+            { word: "HAMBURGUESA", synonym: "PAN" },
+            { word: "TACOS", synonym: "TORTILLA" },
+            { word: "COCA-COLA", synonym: "BURBUJAS" },
+            { word: "PEPSI", synonym: "AZÚCAR" },
+            { word: "CAFÉ", synonym: "GRANOS" },
+            { word: "CHOCOLATE", synonym: "CACAO" },
+            { word: "HELADO", synonym: "CREMOSO" },
+            { word: "PASTA", synonym: "HARINA" },
+            { word: "POLLO FRITO", synonym: "EMPANIZADO" },
+            { word: "HOT DOG", synonym: "SALCHICHA" },
+            
+            // Marcas Famosas
+            { word: "MCDONALD'S", synonym: "ARCOS" },
+            { word: "STARBUCKS", synonym: "SIRENA" },
+            { word: "KFC", synonym: "CORONEL" },
+            { word: "NIKE", synonym: "PALOMITA" },
+            { word: "ADIDAS", synonym: "RAYAS" },
+            { word: "APPLE", synonym: "MORDIDA" },
+            { word: "SAMSUNG", synonym: "COREANO" },
+            { word: "SONY", synonym: "WALKMAN" },
+            { word: "GUCCI", synonym: "LUJO" },
+            { word: "ZARA", synonym: "TIENDA" },
+            { word: "IKEA", synonym: "ARMABLE" },
+            { word: "WALMART", synonym: "DESCUENTO" },
+            
+            // Tecnología
+            { word: "iPHONE", synonym: "TÁCTIL" },
+            { word: "WHATSAPP", synonym: "MENSAJES" },
+            { word: "FACEBOOK", synonym: "PULGAR" },
+            { word: "INSTAGRAM", synonym: "FOTOS" },
+            { word: "TIKTOK", synonym: "CORTO" },
+            { word: "TWITTER", synonym: "PÁJARO" },
+            { word: "YOUTUBE", synonym: "REPRODUCIR" },
+            { word: "NETFLIX", synonym: "SERIES" },
+            { word: "SPOTIFY", synonym: "PLAYLIST" },
+            { word: "GOOGLE", synonym: "BUSCAR" },
+            { word: "AMAZON", synonym: "PAQUETE" },
+            { word: "UBER", synonym: "VIAJE" },
+            { word: "ZOOM", synonym: "VIDEOLLAMADA" },
+            { word: "PLAYSTATION", synonym: "TRIÁNGULO" },
+            { word: "XBOX", synonym: "VERDE" },
+            { word: "NINTENDO", synonym: "PORTÁTIL" },
+            
+            // Películas y Series
+            { word: "TITANIC", synonym: "HUNDIMIENTO" },
+            { word: "AVATAR", synonym: "PANDORA" },
+            { word: "STAR WARS", synonym: "FUERZA" },
+            { word: "AVENGERS", synonym: "VENGADORES" },
+            { word: "JURASSIC PARK", synonym: "EXTINTOS" },
+            { word: "HARRY POTTER", synonym: "VARITA" },
+            { word: "LORD OF THE RINGS", synonym: "ANILLO" },
+            { word: "TOY STORY", synonym: "VAQUERO" },
+            { word: "FROZEN", synonym: "NIEVE" },
+            { word: "SHREK", synonym: "PANTANO" },
+            { word: "LA CASA DE PAPEL", synonym: "ATRACO" },
+            { word: "STRANGER THINGS", synonym: "DIMENSIÓN" },
+            { word: "BREAKING BAD", synonym: "QUÍMICA" },
+            { word: "GAME OF THRONES", synonym: "DRAGONES" },
+            { word: "THE OFFICE", synonym: "ESCRITORIO" },
+            { word: "FRIENDS", synonym: "APARTAMENTO" },
+            
+            // Personajes y Celebridades
+            { word: "BATMAN", synonym: "CUEVA" },
+            { word: "SUPERMAN", synonym: "KRYPTON" },
+            { word: "SPIDERMAN", synonym: "ARÁCNIDO" },
+            { word: "IRON MAN", synonym: "REACTOR" },
+            { word: "HULK", synonym: "ENOJO" },
+            { word: "MICKEY MOUSE", synonym: "OREJAS" },
+            { word: "PIKACHU", synonym: "ELECTRICIDAD" },
+            { word: "MARIO BROS", synonym: "FONTANERO" },
+            { word: "SONIC", synonym: "ANILLOS" },
+            { word: "MESSI", synonym: "ROSARIO" },
+            { word: "CRISTIANO RONALDO", synonym: "BICHO" },
+            { word: "NEYMAR", synonym: "SAMBA" },
+            { word: "LEBRON JAMES", synonym: "CLEVELAND" },
+            { word: "MICHAEL JORDAN", synonym: "CHICAGO" },
+            { word: "SHAKIRA", synonym: "CADERAS" },
+            { word: "BAD BUNNY", synonym: "CONEJO" },
+            { word: "TAYLOR SWIFT", synonym: "GUITARRA" },
+            { word: "BEYONCÉ", synonym: "DESTINY" },
+            { word: "JUSTIN BIEBER", synonym: "BABY" },
+            { word: "BILLIE EILISH", synonym: "SUSURRO" },
+            
+            // Videojuegos
+            { word: "MINECRAFT", synonym: "BLOQUES" },
+            { word: "FORTNITE", synonym: "BAILE" },
+            { word: "ROBLOX", synonym: "ROBUX" },
+            { word: "FIFA", synonym: "ESTADIO" },
+            { word: "CALL OF DUTY", synonym: "GUERRA" },
+            { word: "GRAND THEFT AUTO", synonym: "ROBO" },
+            { word: "POKEMON", synonym: "ENTRENADOR" },
+            { word: "AMONG US", synonym: "TRAIDOR" },
+            { word: "LEAGUE OF LEGENDS", synonym: "CAMPEONES" },
+            { word: "VALORANT", synonym: "AGENTES" },
+            { word: "CANDY CRUSH", synonym: "DULCES" },
+            
+            // Lugares
+            { word: "PARIS", synonym: "TORRE" },
+            { word: "NUEVA YORK", synonym: "MANZANA" },
+            { word: "TOKYO", synonym: "NEÓN" },
+            { word: "LONDRES", synonym: "RELOJ" },
+            { word: "ROMA", synonym: "COLISEO" },
+            { word: "BARCELONA", synonym: "SAGRADA" },
+            { word: "DUBAI", synonym: "RASCACIELOS" },
+            { word: "LAS VEGAS", synonym: "CASINO" },
+            { word: "HOLLYWOOD", synonym: "LETRAS" },
+            { word: "DISNEYLANDIA", synonym: "CASTILLO" },
+            { word: "MONTE EVEREST", synonym: "CIMA" },
+            { word: "GRAN MURALLA CHINA", synonym: "MURALLA" },
+            { word: "PIRÁMIDES DE EGIPTO", synonym: "FARAÓN" },
+            { word: "ESTATUA DE LA LIBERTAD", synonym: "ANTORCHA" },
+            
+            // Animales
+            { word: "LEÓN", synonym: "MELENA" },
+            { word: "TIGRE", synonym: "RAYAS" },
+            { word: "ELEFANTE", synonym: "TROMPA" },
+            { word: "DELFÍN", synonym: "ALETA" },
+            { word: "TIBURÓN", synonym: "MANDÍBULA" },
+            { word: "ÁGUILA", synonym: "GARRAS" },
+            { word: "PINGÜINO", synonym: "HIELO" },
+            { word: "PANDA", synonym: "BAMBÚ" },
+            { word: "KOALA", synonym: "EUCALIPTO" },
+            { word: "JIRAFA", synonym: "CUELLO" },
+            
+            // Deportes y Equipos
+            { word: "REAL MADRID", synonym: "BLANCO" },
+            { word: "BARCELONA", synonym: "CATALUÑA" },
+            { word: "MANCHESTER UNITED", synonym: "DIABLOS" },
+            { word: "CHAMPIONS LEAGUE", synonym: "ESTRELLAS" },
+            { word: "COPA MUNDIAL", synonym: "TROFEO" },
+            { word: "OLIMPIADAS", synonym: "ANILLOS" },
+            { word: "NBA", synonym: "CANASTA" },
+            { word: "FÓRMULA 1", synonym: "VELOCIDAD" },
+            
+            // Marcas de Autos
+            { word: "FERRARI", synonym: "CABALLO" },
+            { word: "LAMBORGHINI", synonym: "TORO" },
+            { word: "TESLA", synonym: "BATERÍA" },
+            { word: "PORSCHE", synonym: "DEPORTIVO" },
+            { word: "BMW", synonym: "HÉLICE" },
+            { word: "MERCEDES-BENZ", synonym: "ESTRELLA" },
+            { word: "TOYOTA", synonym: "HÍBRIDO" },
+            { word: "FORD", synonym: "ÓVALO" },
+            
+            // Empresas
+            { word: "DISNEY", synonym: "RATÓN" },
+            { word: "MICROSOFT", synonym: "VENTANAS" },
+            { word: "SPACEX", synonym: "COHETE" },
+            
+            // Objetos Comunes
+            { word: "GUITARRA", synonym: "CUERDAS" },
+            { word: "PIANO", synonym: "TECLAS" },
+            { word: "BATERÍA", synonym: "PLATILLOS" },
+            { word: "BALÓN", synonym: "INFLADO" },
+            { word: "RELOJ", synonym: "AGUJAS" },
+            { word: "LENTES", synonym: "CRISTALES" },
+            { word: "MOCHILA", synonym: "ESPALDA" },
+            { word: "PARAGUAS", synonym: "LLUVIA" }
         ];
+
+        // Palabras usadas en esta sesión
+        let usedWords = [];
 
         let gameState = {
             players: [],
@@ -406,6 +549,7 @@
             gameState.players = [name];
             showScreen('setupScreen');
             updateSetupPlayerList();
+            updateWordStats();
         }
 
         function addPlayer() {
@@ -442,6 +586,20 @@
             ).join('');
         }
 
+        function updateWordStats() {
+            // Actualizar en pantalla de setup
+            const statsElement = document.getElementById('wordStats');
+            if (statsElement) {
+                statsElement.textContent = `${usedWords.length} de ${allWords.length}`;
+            }
+            
+            // Actualizar en pantalla de juego
+            const playStatsElement = document.getElementById('playWordStats');
+            if (playStatsElement) {
+                playStatsElement.textContent = `${usedWords.length} de ${allWords.length}`;
+            }
+        }
+
         function removePlayer(index) {
             if (gameState.players.length <= 1) {
                 alert('Debe haber al menos 1 jugador');
@@ -457,10 +615,25 @@
                 return;
             }
 
-            // Seleccionar palabra aleatoria e impostor
-            const wordData = words[Math.floor(Math.random() * words.length)];
+            // Obtener palabras disponibles (no usadas)
+            const availableWords = allWords.filter(w => !usedWords.includes(w.word));
+            
+            // Si ya usamos todas, reiniciar
+            if (availableWords.length === 0) {
+                usedWords = [];
+                alert('¡Han jugado todas las palabras! Se reinicia la lista.');
+                return startGame();
+            }
+
+            // Seleccionar palabra aleatoria de las disponibles
+            const wordData = availableWords[Math.floor(Math.random() * availableWords.length)];
             gameState.word = wordData.word;
             gameState.synonymForImpostor = wordData.synonym;
+            
+            // Marcar palabra como usada
+            usedWords.push(wordData.word);
+            
+            // Seleccionar impostor aleatorio
             gameState.impostorIndex = Math.floor(Math.random() * gameState.players.length);
             gameState.impostor = gameState.players[gameState.impostorIndex];
             gameState.currentRevealIndex = 0;
@@ -517,6 +690,9 @@
                     <span>${i + 1}. ${name}</span>
                 </div>`
             ).join('');
+            
+            // Actualizar estadísticas de palabras usadas
+            updateWordStats();
         }
 
         function revealImpostor() {
@@ -537,6 +713,7 @@
                 currentRevealIndex: 0
             };
 
+            // No reiniciar usedWords - mantener palabras usadas en la sesión
             startGame();
         }
 
@@ -549,6 +726,9 @@
                 impostorIndex: -1,
                 currentRevealIndex: 0
             };
+            
+            // Reiniciar palabras usadas al volver al menú
+            usedWords = [];
             
             document.getElementById('hostName').value = '';
             showScreen('homeScreen');
