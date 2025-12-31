@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMPOSTOR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            transition: border 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .secondary-btn {
+            background: #6c757d;
+        }
+
+        .danger-btn {
+            background: #ef4444;
+        }
+
+        .success-btn {
+            background: #10b981;
+        }
+
+        .player-list {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .player-item {
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1em;
+        }
+
+        .word-reveal {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 2.5em;
+            font-weight: bold;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .impostor-reveal {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .hint {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+            font-size: 1.1em;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+        }
+
+        .player-name-big {
+            font-size: 3em;
+            text-align: center;
+            margin: 20px 0;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .btn-remove {
+            background: #ef4444;
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .game-rules {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .game-rules h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .game-rules ol {
+            margin-left: 20px;
+        }
+
+        .game-rules li {
+            margin: 8px 0;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 2em;
+            }
+            .container {
+                padding: 20px;
+            }
+            .word-reveal {
+                font-size: 2em;
+                padding: 30px;
+            }
+            .player-name-big {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎭 IMPOSTOR</h1>
+        <p class="subtitle">¡Encuentra al impostor!</p>
+
+        <!-- Pantalla de inicio -->
+        <div id="homeScreen" class="screen active">
+            <input type="text" id="hostName" placeholder="Tu nombre">
+            <button onclick="createGame()">🎮 Crear Nueva Partida</button>
+            
+            <div class="game-rules">
+                <h3>📖 Cómo jugar:</h3>
+                <ol>
+                    <li>Agrega los nombres de todos los jugadores</li>
+                    <li>Cada jugador verá su palabra en secreto</li>
+                    <li>Todos tienen la misma palabra... <strong>excepto el impostor</strong></li>
+                    <li>El impostor solo ve una pista genérica</li>
+                    <li>Por turnos, todos dan un sinónimo (hablando)</li>
+                    <li>Después de 1 o 2 rondas, votan quién es el impostor</li>
+                    <li>Si atrapan al impostor: <strong>ganan los jugadores</strong></li>
+                    <li>Si no lo atrapan: <strong>gana el impostor</strong></li>
+                </ol>
+            </div>
+
+            <div class="warning-box">
+                <strong>⚠️ Importante:</strong> Este juego se juega en una sola pantalla. Todos los jugadores deben estar físicamente juntos.
+            </div>
+        </div>
+
+        <!-- Pantalla de agregar jugadores -->
+        <div id="setupScreen" class="screen">
+            <h2 style="text-align: center; margin-bottom: 20px;">Agregar Jugadores</h2>
+            
+            <input type="text" id="newPlayerName" placeholder="Nombre del jugador" onkeypress="if(event.key==='Enter') addPlayer()">
+            <button onclick="addPlayer()" class="success-btn">➕ Agregar Jugador</button>
+            
+            <h3>Jugadores en la partida:</h3>
+            <div class="player-list" id="setupPlayerList"></div>
+            
+            <div class="info-box" style="font-size: 0.9em;">
+                <strong>Jugadores:</strong> <span id="playerCount">1</span> (mínimo 3)
+            </div>
+            
+            <button onclick="startGame()">🚀 Iniciar Juego</button>
+            <button onclick="goHome()" class="secondary-btn">Cancelar</button>
+        </div>
+
+        <!-- Pantalla de revelación individual -->
+        <div id="revealScreen" class="screen">
+            <h2 style="text-align: center; margin-bottom: 10px;">Turno de:</h2>
+            <div class="player-name-big" id="currentPlayerName"></div>
+            
+            <div class="warning-box">
+                <strong>📱 ¡OJO!</strong><br>
+                Solo <strong id="revealPlayerName"></strong> debe ver esta pantalla.<br>
+                Los demás deben voltear la mirada o cerrar los ojos.
+            </div>
+            
+            <button onclick="revealWord()" class="success-btn">👀 Ver Mi Palabra</button>
+        </div>
+
+        <!-- Pantalla de palabra revelada -->
+        <div id="wordScreen" class="screen">
+            <h2 style="text-align: center; margin-bottom: 20px;" id="wordTitle">Tu palabra es...</h2>
+            <div class="word-reveal" id="wordReveal"></div>
+            <div class="hint" id="hintText"></div>
+            
+            <div class="info-box">
+                <strong>Memoriza tu palabra y NO la digas en voz alta.</strong><br>
+                Cuando estés listo, pasa el dispositivo al siguiente jugador.
+            </div>
+            
+            <button onclick="nextPlayer()">Siguiente Jugador ➡️</button>
+        </div>
+
+        <!-- Pantalla de juego iniciado -->
+        <div id="playScreen" class="screen">
+            <div class="word-reveal" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); font-size: 1.5em; animation: none;">
+                ¡Que comience el juego! 🎮
+            </div>
+
+            <div class="info-box">
+                <strong>🎯 Ahora sí, a jugar:</strong><br><br>
+                • Por turnos, cada uno da un sinónimo de su palabra<br>
+                • El impostor debe intentar adivinar e imitar<br>
+                • Después de 1-2 rondas, voten quién es el impostor<br>
+                • Si atrapan al impostor, él debe adivinar la palabra para ganar
+            </div>
+
+            <div class="hint">
+                <strong>El impostor es:</strong> <span style="color: #ef4444; font-size: 1.2em;">[SECRETO]</span><br>
+                <small>No reveles esta información hasta el final del juego</small>
+            </div>
+
+            <div class="game-rules">
+                <h3>Todos los jugadores:</h3>
+                <div class="player-list" id="finalPlayerList"></div>
+            </div>
+
+            <button onclick="revealImpostor()" class="danger-btn">🎭 Revelar Impostor (al final)</button>
+            <button onclick="playAgain()">🔄 Nueva Partida</button>
+            <button onclick="goHome()" class="secondary-btn">🏠 Menú Principal</button>
+        </div>
+
+        <!-- Pantalla de resultado -->
+        <div id="resultScreen" class="screen">
+            <h2 style="text-align: center; margin-bottom: 20px;">¡Juego Terminado!</h2>
+            
+            <div class="word-reveal impostor-reveal" style="animation: none;">
+                El impostor era:<br>
+                <span id="impostorReveal"></span>
+            </div>
+
+            <div class="info-box" style="font-size: 1.1em;">
+                <strong>La palabra secreta era:</strong><br>
+                <div style="font-size: 2em; text-align: center; color: #667eea; margin: 10px 0;">
+                    <span id="secretWordReveal"></span>
+                </div>
+            </div>
+
+            <button onclick="playAgain()">🔄 Jugar de Nuevo</button>
+            <button onclick="goHome()" class="secondary-btn">🏠 Menú Principal</button>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos de palabras
+        const words = [
+            { word: "PIZZA", synonym: "COMIDA ITALIANA" },
+            { word: "BATMAN", synonym: "SUPERHÉROE" },
+            { word: "MESSI", synonym: "FUTBOLISTA" },
+            { word: "TITANIC", synonym: "PELÍCULA FAMOSA" },
+            { word: "NETFLIX", synonym: "SERVICIO DE STREAMING" },
+            { word: "COCA-COLA", synonym: "REFRESCO" },
+            { word: "iPHONE", synonym: "TELÉFONO INTELIGENTE" },
+            { word: "PARIS", synonym: "CIUDAD EUROPEA" },
+            { word: "HARRY POTTER", synonym: "MAGO FAMOSO" },
+            { word: "SPOTIFY", synonym: "APP DE MÚSICA" },
+            { word: "INSTAGRAM", synonym: "RED SOCIAL" },
+            { word: "STARBUCKS", synonym: "CAFETERÍA" },
+            { word: "NIKE", synonym: "MARCA DEPORTIVA" },
+            { word: "YOUTUBE", synonym: "PLATAFORMA DE VIDEOS" },
+            { word: "AMAZON", synonym: "TIENDA EN LÍNEA" },
+            { word: "PIKACHU", synonym: "POKÉMON" },
+            { word: "CRISTIANO RONALDO", synonym: "JUGADOR DE FÚTBOL" },
+            { word: "SHAKIRA", synonym: "CANTANTE COLOMBIANA" },
+            { word: "MCDONALD'S", synonym: "COMIDA RÁPIDA" },
+            { word: "TESLA", synonym: "AUTO ELÉCTRICO" },
+            { word: "GOOGLE", synonym: "BUSCADOR WEB" },
+            { word: "FACEBOOK", synonym: "RED SOCIAL AZUL" },
+            { word: "MINECRAFT", synonym: "VIDEOJUEGO DE BLOQUES" },
+            { word: "SPIDERMAN", synonym: "SUPERHÉROE ARÁCNIDO" },
+            { word: "MARIO BROS", synonym: "FONTANERO DE VIDEOJUEGOS" },
+            { word: "STARBUCKS", synonym: "CAFÉ ESTADOUNIDENSE" },
+            { word: "PEPSI", synonym: "BEBIDA COLA" },
+            { word: "ADIDAS", synonym: "MARCA DE ROPA DEPORTIVA" },
+            { word: "DISNEY", synonym: "COMPAÑÍA DE ENTRETENIMIENTO" },
+            { word: "TOKYO", synonym: "CAPITAL ASIÁTICA" }
+        ];
+
+        let gameState = {
+            players: [],
+            word: '',
+            synonymForImpostor: '',
+            impostor: '',
+            impostorIndex: -1,
+            currentRevealIndex: 0
+        };
+
+        function createGame() {
+            const name = document.getElementById('hostName').value.trim();
+            if (!name) {
+                alert('Por favor escribe tu nombre');
+                return;
+            }
+
+            gameState.players = [name];
+            showScreen('setupScreen');
+            updateSetupPlayerList();
+        }
+
+        function addPlayer() {
+            const input = document.getElementById('newPlayerName');
+            const name = input.value.trim();
+            
+            if (!name) {
+                alert('Por favor escribe un nombre');
+                return;
+            }
+
+            if (gameState.players.includes(name)) {
+                alert('Este nombre ya está en uso');
+                return;
+            }
+
+            gameState.players.push(name);
+            input.value = '';
+            input.focus();
+            updateSetupPlayerList();
+        }
+
+        function updateSetupPlayerList() {
+            const list = document.getElementById('setupPlayerList');
+            const count = document.getElementById('playerCount');
+            
+            count.textContent = gameState.players.length;
+            
+            list.innerHTML = gameState.players.map((name, i) => 
+                `<div class="player-item">
+                    <span>${i + 1}. ${name}</span>
+                    <button class="btn-remove" onclick="removePlayer(${i})">❌ Quitar</button>
+                </div>`
+            ).join('');
+        }
+
+        function removePlayer(index) {
+            if (gameState.players.length <= 1) {
+                alert('Debe haber al menos 1 jugador');
+                return;
+            }
+            gameState.players.splice(index, 1);
+            updateSetupPlayerList();
+        }
+
+        function startGame() {
+            if (gameState.players.length < 3) {
+                alert('Se necesitan al menos 3 jugadores para empezar');
+                return;
+            }
+
+            // Seleccionar palabra aleatoria e impostor
+            const wordData = words[Math.floor(Math.random() * words.length)];
+            gameState.word = wordData.word;
+            gameState.synonymForImpostor = wordData.synonym;
+            gameState.impostorIndex = Math.floor(Math.random() * gameState.players.length);
+            gameState.impostor = gameState.players[gameState.impostorIndex];
+            gameState.currentRevealIndex = 0;
+
+            showRevealForPlayer(0);
+        }
+
+        function showRevealForPlayer(index) {
+            showScreen('revealScreen');
+            const playerName = gameState.players[index];
+            document.getElementById('currentPlayerName').textContent = playerName;
+            document.getElementById('revealPlayerName').textContent = playerName;
+            gameState.currentRevealIndex = index;
+        }
+
+        function revealWord() {
+            showScreen('wordScreen');
+            const isImpostor = gameState.currentRevealIndex === gameState.impostorIndex;
+            const reveal = document.getElementById('wordReveal');
+            const hint = document.getElementById('hintText');
+            const title = document.getElementById('wordTitle');
+
+            if (isImpostor) {
+                title.textContent = '¡Eres el IMPOSTOR! 🎭';
+                reveal.textContent = "???";
+                reveal.className = "word-reveal impostor-reveal";
+                hint.innerHTML = `<strong>Tu pista es:</strong> ${gameState.synonymForImpostor}<br><br>
+                    Debes adivinar la palabra secreta escuchando los sinónimos que dan los demás. ¡Intenta no ser descubierto dando sinónimos que parezcan encajar!`;
+            } else {
+                title.textContent = 'Tu palabra es...';
+                reveal.textContent = gameState.word;
+                reveal.className = "word-reveal";
+                hint.innerHTML = `<strong>No eres el impostor</strong><br><br>
+                    Da sinónimos relacionados con "<strong>${gameState.word}</strong>", pero no seas muy obvio. Hay un impostor entre ustedes que NO conoce la palabra y solo tiene una pista genérica.`;
+            }
+        }
+
+        function nextPlayer() {
+            gameState.currentRevealIndex++;
+            
+            if (gameState.currentRevealIndex < gameState.players.length) {
+                showRevealForPlayer(gameState.currentRevealIndex);
+            } else {
+                // Todos vieron su palabra
+                showPlayScreen();
+            }
+        }
+
+        function showPlayScreen() {
+            showScreen('playScreen');
+            const list = document.getElementById('finalPlayerList');
+            list.innerHTML = gameState.players.map((name, i) => 
+                `<div class="player-item">
+                    <span>${i + 1}. ${name}</span>
+                </div>`
+            ).join('');
+        }
+
+        function revealImpostor() {
+            showScreen('resultScreen');
+            document.getElementById('impostorReveal').textContent = gameState.impostor;
+            document.getElementById('secretWordReveal').textContent = gameState.word;
+        }
+
+        function playAgain() {
+            const players = gameState.players;
+            
+            gameState = {
+                players: players,
+                word: '',
+                synonymForImpostor: '',
+                impostor: '',
+                impostorIndex: -1,
+                currentRevealIndex: 0
+            };
+
+            startGame();
+        }
+
+        function goHome() {
+            gameState = {
+                players: [],
+                word: '',
+                synonymForImpostor: '',
+                impostor: '',
+                impostorIndex: -1,
+                currentRevealIndex: 0
+            };
+            
+            document.getElementById('hostName').value = '';
+            showScreen('homeScreen');
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
